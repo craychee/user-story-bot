@@ -1,4 +1,4 @@
-# ATLA
+# User Story Bot
 
 ##Requirements
 
