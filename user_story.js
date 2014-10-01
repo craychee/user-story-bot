@@ -1,19 +1,24 @@
 var restclient = require('node-restclient');
 var Twit = require('twit');
+var conf = require('nconf');
 var app = require('express').createServer();
 
-// Nodejitsu requires an application to respond to HTTP requests.
+// I deployed to Nodejitsu, which requires an application to respond to HTTP requests
+// If you're running locally you don't need this, or express at all.
 app.get('/', function(req, res){
     res.send('Hello world.');
 });
 app.listen(3000);
 
+conf.use('file', { file: './keys.json' });
+conf.load();
+
 // Twitter app info here.
 var T = new Twit({
-  consumer_key:         '__TOP SECRET KEY__',
-  consumer_secret:      '__TOP SECRET SECRET__',
-  access_token:         '__TOP SECRET TOKEN__',
-  access_token_secret:  '__TOP SECRET TOKEN SECRET__'
+  consumer_key:         conf.get('consumer_key'),
+  consumer_secret:      conf.get('consumer_secret'),
+  access_token:         conf.get('access_token'),
+  access_token_secret:  conf.get('access_token_secret'),
 });
 
 var statement =   "";
@@ -23,15 +28,18 @@ var getNounsURL = "http://api.wordnik.com/v4/words.json/randomWords?" +
                   "minCorpusCount=1000&minDictionaryCount=10&" +
                   "excludePartOfSpeech=proper-noun,proper-noun-plural,proper-noun-posessive,suffix,family-name,idiom,affix&" +
                   "hasDictionaryDef=true&includePartOfSpeech=noun&limit=2&maxLength=12&" +
-                  "api_key=__WORDNIK API KEY__";
+                  "api_key=" +
+                  conf.get('wordnik_key');
 
 var getIntVerbURL =  "http://api.wordnik.com/v4/words.json/randomWords?" +
                   "hasDictionaryDef=true&includePartOfSpeech=verb-transitive&limit=2&" +
-                  "minCorpusCount=100&api_key=__WORDNIK API KEY__";
+                  "minCorpusCount=100&api_key=" +
+                  conf.get('wordnik_key');
 
 var getVerbURL =  "http://api.wordnik.com/v4/words.json/randomWords?" +
                   "hasDictionaryDef=true&includePartOfSpeech=verb&limit=2&" +
-                  "minCorpusCount=100&api_key=__WORDNIK API KEY__";
+                  "minCorpusCount=100&api_key=" +
+                  conf.get('wordnik_key');
 
 function makeUserStory() {
   statement = "As a bot, I want to ";
